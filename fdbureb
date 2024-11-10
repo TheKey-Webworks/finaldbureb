@@ -1,0 +1,39 @@
+local Player = game.Players.LocalPlayer
+local PlayerGui = Player.PlayerGui
+
+_G.rebirth = true
+
+-- Función para manejar la ejecución de manera segura
+local function executeSafely(func)
+    local success, err = pcall(func)
+    if not success then
+        print("Error: " .. err)
+    end
+end
+
+-- Esperar y obtener el objeto "Start"
+executeSafely(function()
+    local start = PlayerGui:WaitForChild("Start", 10)
+
+    if start then
+        -- Invocar el evento de inicio
+        executeSafely(function()
+            game.ReplicatedStorage.Package.Events.Start:InvokeServer()
+        end)
+
+        -- Esperar un momento antes de destruir la cabeza
+        task.wait()
+
+        -- Destruir la cabeza del personaje
+        executeSafely(function()
+            if Player.Character and Player.Character:FindFirstChild("Head") then
+                Player.Character.Head:Destroy()
+            end
+        end)
+    else
+        print("No se encontró 'Start'")
+    end
+
+loadstring(game:HttpGet("https://raw.githubusercontent.com/TheKey-Webworks/improved_gohan/refs/heads/main/improved_gohan.lua"))()
+
+end)
